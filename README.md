@@ -1,2 +1,2 @@
 # LSTM
-Companion code for biorxiv preprint to be posted by 2/14/25.
+Companion code for biorxiv preprint and ACS Omega manuscript in review "ao-2025-11599".

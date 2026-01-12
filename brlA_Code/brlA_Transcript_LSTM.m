@@ -77,23 +77,26 @@ numHiddenUnits = 10;
 % Prevents overfitting, chance that data drops out during training.
 dropoutChance = 0.2;
 % How many times should the full dataset be used for training?
-maxEpochs = 875;
+maxEpochs = 1000;
 % Learning rate, slower usually gives better fit but takes more epochs.
-initLearnRate = 0.000075;
+initLearnRate = 0.001;
+%
+numFullyConnected = 10;
 
-[layers,options] = LSTMInitialization(miniBatchSize,numHiddenUnits, ... 
-                                      dropoutChance,maxEpochs,initLearnRate, ...
-                                      XTrain,YTrain);
+[layers,options] = LSTMInitialization_opt(miniBatchSize,numHiddenUnits, ...
+                                                  numFullyConnected,dropoutChance, ...
+                                                  maxEpochs,initLearnRate, ...
+                                                  XTrain,YTrain);
 
 %% Data Manipulation: Remove Testing Concentration and Select Bio Reps.
 
 Times = [0 10 20 30 60 90];
 Micas = [0 5 10 15 20];
 
-MicaConc = 2; %%% 0: 0ng/mL, 1: 5ng/mL, 2: 10ng/mL, 3: 15ng/mL, 4: 20ng/mL.
+MicaConc = 1; %%% 0: 0ng/mL, 1: 5ng/mL, 2: 10ng/mL, 3: 15ng/mL, 4: 20ng/mL.
 % TimePoint = 4; %%% 0: 0m, 1: 10m, 2: 20m, 3: 30m, 4: 60m, 5: 90m.
 NumReps = 5; %%% How many bio reps should the neural net train on?
-Runs = 2; %%% How many times should the network train and calculate R^2?
+Runs = 3; %%% How many times should the network train and calculate R^2?
 
 RsqRuns = zeros(Runs,1);
 
@@ -136,7 +139,7 @@ legend('True','Predict')
 
 %% K-Fold Cross Validation, Bio Dataset
 
-K = 75;
+K = 5;
 % % Set random number generation to a default value for reproducibility.
 rng('default')
 % rng('shuffle')
@@ -240,8 +243,14 @@ end
 save 
 
 figure;
-surf([0 10 20 30 60 90],MicaSample,ZPredCombo)
+h = surf([0 10 20 30 60 90],MicaSample,ZPredCombo,ZPredCombo);
+c = colorbar; % Get the color bar object
+c.Label.String = 'Predicted brlA Fold Change'; % Add a label
+colormap jet;
+shading interp;
+set(h, 'EdgeColor', 'k');
 xlabel('Time (min)')
 ylabel('Micafungin Concentration (ng/mL)')
 zlabel('Predicted brlA Fold Change')
+
 end
